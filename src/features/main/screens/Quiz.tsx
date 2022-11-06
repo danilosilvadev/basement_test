@@ -1,40 +1,89 @@
 import { Common } from "../../common";
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const {
   Components: { Container },
 } = Common;
 
-const options = [
-  { value: "1", label: "1" },
-  { value: "2", label: "2" },
-  { value: "3", label: "3" },
-  { value: "4", label: "4" },
+interface IQuiz {
+  question: string;
+  answers: {
+    text: string;
+    correct: boolean;
+    id: any;
+  }[];
+}
+
+const quizAPI: IQuiz[] = [
+  {
+    question: "What is the capital of France?",
+    answers: [
+      { text: "New York", correct: false, id: Symbol() },
+      { text: "London", correct: false, id: Symbol() },
+      { text: "Paris", correct: true, id: Symbol() },
+      { text: "Dublin", correct: false, id: Symbol() },
+    ],
+  },
+  {
+    question: "Who is CEO of Tesla?",
+    answers: [
+      { text: "Jeff Bezos", correct: false, id: Symbol() },
+      { text: "Elon Musk", correct: true, id: Symbol() },
+      { text: "Bill Gates", correct: false, id: Symbol() },
+      { text: "Tony Stark", correct: false, id: Symbol() },
+    ],
+  },
+  {
+    question: "The iPhone was created by which company?",
+    answers: [
+      { text: "Apple", correct: true, id: Symbol() },
+      { text: "Intel", correct: false, id: Symbol() },
+      { text: "Amazon", correct: false, id: Symbol() },
+      { text: "Microsoft", correct: false, id: Symbol() },
+    ],
+  },
 ];
 
 export const QuizScreen = () => {
-  const [selectedOption, setSelectedOption] = useState(options[0]);
-  const [question, setQuestion] = useState(0);
-  const [score, setScore] = useState(0);
+  const navigate = useNavigate();
+  const [quizData, setQuizData] = useState<IQuiz[]>();
+  const [score, setScore] = useState<number>(0);
+  const [currentQuestion, setCurrentQuestion] = useState<number>(0);
 
-  const handleOption = (e: any) => {
-    setSelectedOption(e.target.value);
+  useEffect(() => {
+    setQuizData(quizAPI);
+  }, []);
+
+  const handleOption = (correct: boolean) => {
+    if (correct) {
+      setScore(score + 1);
+    }
+    if (quizData && currentQuestion + 1 >= quizData?.length) {
+      navigate("/results");
+    } else {
+      setCurrentQuestion(currentQuestion + 1);
+    }
   };
 
   return (
     <Container width={500}>
       <Header>
-        <span>1/3</span>
-        <span>Certas: 0</span>
+        <span>{currentQuestion + 1}/3</span>
+        <span>Certas: {score}</span>
       </Header>
-      <h2>Pergunta dasd asd das da sdfsdf sdffsd fsdf sdfs?</h2>
+      <h2>{quizData && quizData[currentQuestion].question}</h2>
       <OptionsList>
-        {options.map((option) => (
-          <OptionItem key={option.value} onClick={handleOption}>
-            {option.label}
-          </OptionItem>
-        ))}
+        {quizData &&
+          quizData[currentQuestion].answers.map((option) => (
+            <OptionItem
+              key={option.text}
+              onClick={() => handleOption(option.correct)}
+            >
+              {option.text}
+            </OptionItem>
+          ))}
       </OptionsList>
     </Container>
   );

@@ -1,5 +1,5 @@
 import { SignInScreen } from "./auth/screens";
-import { QuizScreen } from "./main/screens";
+import { QuizScreen, ResultsScreen } from "./main/screens";
 
 export const Screens = {
   Auth: {
@@ -7,5 +7,6 @@ export const Screens = {
   },
   Main: {
     QuizScreen,
+    ResultsScreen,
   },
 };

@@ -10,6 +10,7 @@ export const RoutesStack = () => {
       <Routes>
         <Route path="/" element={<Screens.Auth.SignInScreen />} />
         <Route path="quiz" element={<Screens.Main.QuizScreen />} />
+        <Route path="results" element={<Screens.Main.ResultsScreen />} />
       </Routes>
     </Center>
   );
