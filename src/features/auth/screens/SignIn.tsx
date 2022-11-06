@@ -1,27 +1,53 @@
+import { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Common } from "../../common";
+import { getCategories } from "../services";
 
 interface IForm {
   name: string;
-  category: string;
+  category: {
+    name: string;
+    id: number;
+  };
 }
 
 const {
   Components: { Container },
+  hooks: { useApi },
 } = Common;
 
 export const SignInScreen = () => {
-  const [form, setForm] = useState<IForm>({ name: "", category: "" });
+  const [form, setForm] = useState<IForm>({
+    name: "",
+    category: { name: "", id: 0 },
+  });
   const navigate = useNavigate();
+  const [categoriesResponse] = useApi(getCategories());
+
+  useEffect(() => {
+    console.log(categoriesResponse);
+    if (categoriesResponse) {
+      setForm((prev) => ({
+        ...prev,
+        category: categoriesResponse.categories[0].id,
+      }));
+    }
+  }, [categoriesResponse]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, name: e.target.value });
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setForm({ ...form, category: e.target.value });
+    setForm({
+      ...form,
+      category: {
+        id: Number(e.target.value),
+        name: e.target.textContent || "",
+      },
+    });
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -41,10 +67,17 @@ export const SignInScreen = () => {
           <FormField>
             <Label>Categoria</Label>
             <Select title="player" onChange={handleCategoryChange}>
-              <option value="volvo">Volvo</option>
-              <option value="saab">Saab</option>
-              <option value="fiat">Fiat</option>
-              <option value="audi">Audi</option>
+              {categoriesResponse && (
+                <>
+                  {categoriesResponse.categories.map(
+                    (category: IForm["category"]) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    )
+                  )}
+                </>
+              )}
             </Select>
           </FormField>
           <SubmitButton type="submit" value="Jogar" />
