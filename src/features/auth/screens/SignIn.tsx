@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { Common } from "../../common";
 
 interface IForm {
   name: string;
   category: string;
 }
+
+const {
+  Components: { Container },
+} = Common;
 
 export const SignInScreen = () => {
   const [form, setForm] = useState<IForm>({ name: "", category: "" });
@@ -48,16 +53,6 @@ export const SignInScreen = () => {
     </div>
   );
 };
-
-const Container = styled.main`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  border: 1px solid black;
-  justify-content: center;
-  color: black;
-  padding: 50px;
-`;
 
 const Form = styled.form`
   display: flex;
