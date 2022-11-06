@@ -1,24 +1,34 @@
 import * as React from "react";
 import { Routes, Route } from "react-router-dom";
 import styled from "styled-components";
-import { SignIn } from "../../features/auth/screens/SignIn";
+import { Screens } from "../../features";
 
 export const RoutesStack = () => {
   return (
     <Center>
-      <h1>Quiz App</h1>
+      <Title>Quiz App</Title>
       <Routes>
-        <Route path="sign-in" element={<SignIn />} />
-        <Route path="play" element={<></>} />
+        <Route path="/" element={<Screens.Auth.SignInScreen />} />
+        <Route path="quiz" element={<Screens.Main.QuizScreen />} />
       </Routes>
     </Center>
   );
 };
 
+const Title = styled.h1`
+  font-size: 2rem;
+  font-weight: 700;
+  position: fixed;
+  top: 50px;
+`;
+
 const Center = styled.section`
+  margin: 0 auto;
+  font-family: helvetica;
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
 `;
