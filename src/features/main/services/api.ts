@@ -5,9 +5,18 @@ const getResults = async (id: number) => {
   return data;
 };
 
-const postAnswer = async (id: number, answerId: number) => {
-  const { data } = await request.post(`/rounds/${id}/answers`, {
-    answerId,
+interface IPostAnswer {
+  roundId: number;
+  questionId: number;
+  answerId: number;
+}
+
+const postAnswer = async ({ roundId, answerId, questionId }: IPostAnswer) => {
+  const { data } = await request.post(`/rounds/${roundId}/answers`, {
+    answer: {
+      option_id: answerId,
+      question_id: questionId,
+    },
   });
   return data;
 };

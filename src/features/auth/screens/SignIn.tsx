@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { UserContext } from "../../../config/context/user";
+import { useContext, useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Common } from "../../common";
-import { getCategories } from "../services";
+import { getCategories, signIn } from "../services";
 
 interface IForm {
   name: string;
@@ -24,14 +25,18 @@ export const SignInScreen = () => {
     category: { name: "", id: 0 },
   });
   const navigate = useNavigate();
-  const [categoriesResponse] = useApi(getCategories());
+  const [categoriesService, categoriesResponse] = useApi();
+  const { setRound } = useContext(UserContext);
 
   useEffect(() => {
-    console.log(categoriesResponse);
-    if (categoriesResponse) {
+    categoriesService(getCategories());
+  }, []);
+
+  useEffect(() => {
+    if (categoriesResponse?.categories) {
       setForm((prev) => ({
         ...prev,
-        category: categoriesResponse.categories[0].id,
+        category: categoriesResponse?.categories[0],
       }));
     }
   }, [categoriesResponse]);
@@ -52,8 +57,17 @@ export const SignInScreen = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(form);
-    navigate("/quiz");
+    console.log(form.category);
+    if (form.name) {
+      signIn(form.name, form.category.id).then(({ round }) => {
+        setRound({
+          playerName: form.name,
+          id: round.player_id,
+          questions: round.questions,
+        });
+        navigate("/quiz");
+      });
+    }
   };
 
   return (
@@ -66,10 +80,14 @@ export const SignInScreen = () => {
           </FormField>
           <FormField>
             <Label>Categoria</Label>
-            <Select title="player" onChange={handleCategoryChange}>
+            <Select
+              title="player"
+              onChange={handleCategoryChange}
+              defaultValue={form?.category?.id}
+            >
               {categoriesResponse && (
                 <>
-                  {categoriesResponse.categories.map(
+                  {categoriesResponse?.categories.map(
                     (category: IForm["category"]) => (
                       <option key={category.id} value={category.id}>
                         {category.name}

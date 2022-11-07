@@ -1,15 +1,16 @@
 import { AxiosPromise, AxiosResponse } from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-export const useApi = (service: AxiosPromise<unknown>) => {
+export const useApi = () => {
   const [response, setResponse] = useState<any>(null);
   const [error, setError] = useState<string>("");
   const [loading, setloading] = useState<boolean>(true);
 
-  const fetchData = () => {
-    service
+  const handleRequest = (service: AxiosPromise) => {
+    return service
       .then((res: AxiosResponse<unknown>) => {
         setResponse(res);
+        return res;
       })
       .catch((err) => {
         setError(err);
@@ -19,9 +20,5 @@ export const useApi = (service: AxiosPromise<unknown>) => {
       });
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  return [response, error, loading];
+  return [handleRequest, response, error, loading];
 };
